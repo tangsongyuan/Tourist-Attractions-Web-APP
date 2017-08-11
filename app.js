@@ -10,12 +10,15 @@ app.set("view engine", "ejs");
 // schema setup
 var placeSchema = new mongoose.Schema({
     name: String,
-    image: String
+    image: String,
+    description: String
 });
 var Place = mongoose.model("Place", placeSchema);
 
 // Place.create({
-//     name: "Time Square", image: "https://source.unsplash.com/h7rOzTmGxWE"
+//     name : "Grand Central Terminal", 
+//     image : "https://source.unsplash.com/_UHEB459oB0",
+//     description: "Grand Central Terminal is a commuter, rapid transit, and intercity railroad terminal at 42nd Street and Park Avenue in Midtown Manhattan in New York City, United States."
 // }, function(err, place) {
 //     if (err) {
 //         console.log(err);
@@ -23,29 +26,21 @@ var Place = mongoose.model("Place", placeSchema);
 //         console.log("Successfully create a new place in DB: ");
 //         console.log(place);
 //     }
-// })
-
-var places = [
-    {name: "the Statue of Liberty", image: "https://source.unsplash.com/X3qI2GLC-gg"},
-    {name: "Empire State Building", image: "https://source.unsplash.com/RokFUDqlTIo"},
-    {name: "Brooklyn Bridge", image: "https://source.unsplash.com/bITjK6W2Alw"},
-    {name: "Time Square", image: "https://source.unsplash.com/h7rOzTmGxWE"},
-    {name: "the Statue of Liberty", image: "https://source.unsplash.com/X3qI2GLC-gg"},
-    {name: "Empire State Building", image: "https://source.unsplash.com/RokFUDqlTIo"},
-    {name: "Brooklyn Bridge", image: "https://source.unsplash.com/bITjK6W2Alw"},
-    {name: "Time Square", image: "https://source.unsplash.com/h7rOzTmGxWE"},
-    {name: "the Statue of Liberty", image: "https://source.unsplash.com/X3qI2GLC-gg"},
-    {name: "Empire State Building", image: "https://source.unsplash.com/RokFUDqlTIo"},
-    {name: "Brooklyn Bridge", image: "https://source.unsplash.com/bITjK6W2Alw"},
-    {name: "Time Square", image: "https://source.unsplash.com/h7rOzTmGxWE"}
-];
+// });
     
 app.get("/", function(req, res){
     res.render("homepage");
 });
 
 app.get("/places", function(req, res){
-    res.render("places", {places: places});
+    // GET ALL PLACES FROM DB
+    Place.find({}, function(err, allPlaces){
+        if (err) {
+            console.log(err);
+        } else {
+            res.render("index", {places: allPlaces});
+        }
+    });
 });
 
 app.post("/places", function(req, res){
@@ -53,14 +48,33 @@ app.post("/places", function(req, res){
     // get data from form and add data to array
     var name = req.body.name;
     var image = req.body.image;
-    var newPlace = {name: name, image: image};
-    places.push(newPlace);
-    // redirect to home page
-    res.redirect("/places");
+    var description = req.body.description;
+    var newPlace = {name: name, image: image, description: description};
+    // places.push(newPlace);
+    // CREATE A NEW PLACE AND SAVE IT TO DB
+    Place.create(newPlace, function(err, newPlace) {
+        if (err) {
+            console.log(err);
+        } else {
+            console.log("Successfully add a new place:");
+            console.log(newPlace);
+            res.redirect("/places");
+        }
+    });
 });
 
 app.get("/places/new", function(req, res) {
     res.render("new");
+});
+
+app.get("/places/:id", function(req, res) {
+    Place.findById(req.params.id, function(err, findPlace) {
+        if (err) {
+            console.log(err);
+        } else {
+            res.render("show", {place: findPlace});
+        }
+    });
 });
 
 app.listen(process.env.PORT, process.env.IP, function(){
