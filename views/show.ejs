@@ -6,6 +6,11 @@
 
 <p><%= place.description %></p>
 
+<% place.comments.forEach(function(comment) { %>
+    <p>
+        <strong><%= comment.author %></strong> - <%= comment.text %>
+    </p>
+<% }); %>
 <p>
     <a href="/places">Go back</a>
 </p>

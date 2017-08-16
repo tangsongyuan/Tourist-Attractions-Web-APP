@@ -3,31 +3,16 @@ var app = express();
 var bodyParser = require("body-parser");
 var mongoose = require("mongoose");
 
+var Place = require("./models/place");
+// var Comment = require("./models/comment");
+var seedDB = require("./seeds");
+
 mongoose.connect("mongodb://localhost/yelp_places", {useMongoClient: true});
 app.use(bodyParser.urlencoded({extended: true}));
+app.use(express.static("public"));
 app.set("view engine", "ejs");
+seedDB();
 
-// schema setup
-var placeSchema = new mongoose.Schema({
-    name: String,
-    image: String,
-    description: String
-});
-var Place = mongoose.model("Place", placeSchema);
-
-// Place.create({
-//     name : "Grand Central Terminal", 
-//     image : "https://source.unsplash.com/_UHEB459oB0",
-//     description: "Grand Central Terminal is a commuter, rapid transit, and intercity railroad terminal at 42nd Street and Park Avenue in Midtown Manhattan in New York City, United States."
-// }, function(err, place) {
-//     if (err) {
-//         console.log(err);
-//     } else {
-//         console.log("Successfully create a new place in DB: ");
-//         console.log(place);
-//     }
-// });
-    
 app.get("/", function(req, res){
     res.render("homepage");
 });
@@ -68,10 +53,13 @@ app.get("/places/new", function(req, res) {
 });
 
 app.get("/places/:id", function(req, res) {
-    Place.findById(req.params.id, function(err, findPlace) {
+    Place.findById(req.params.id).populate("comments").exec(function(err, findPlace) {
+    // Place.findById(req.params.id, function(err, findPlace) {
         if (err) {
             console.log(err);
         } else {
+            console.log("haha");
+            console.log(findPlace);
             res.render("show", {place: findPlace});
         }
     });
