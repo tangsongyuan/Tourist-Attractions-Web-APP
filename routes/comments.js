@@ -30,6 +30,11 @@ router.post("/", isLoggedIn, function(req, res) {
                     console.log(err);
                     res.render("/places/" + req.params.id + "/comments/new"); ////
                 } else {
+                    // add username and id to comment
+                    newComment.author.username = req.user.username;
+                    newComment.author.id = req.user._id;
+                    // save comment
+                    newComment.save();
                     findPlace.comments.push(newComment);
                     findPlace.save();
                     res.redirect("/places/" + req.params.id); ///

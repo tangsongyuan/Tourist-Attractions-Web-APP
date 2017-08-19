@@ -56,16 +56,7 @@ function seedDB() {
                     } else {
                         console.log("add one place");
                         // create a comment
-                        Comment.create(comment[0], function(err, comment) {
-                            if (err) {
-                                console.log(err);
-                            } else {
-                                place.comments.push(comment);
-                                place.save();
-                                console.log("create a comment");
-                            }
-                        });
-                        // Comment.create(comment[1], function(err, comment) {
+                        // Comment.create(comment[0], function(err, comment) {
                         //     if (err) {
                         //         console.log(err);
                         //     } else {
