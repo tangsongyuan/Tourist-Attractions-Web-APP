@@ -1,6 +1,7 @@
 var express = require("express");
 var router = express.Router();
 var Place = require("../models/place");
+var middleware = require("../middleware"); // directly point to index.js
 
 
 // INDEX - show all places
@@ -17,7 +18,7 @@ router.get("/", function(req, res){
 });
 
 // CREATE - add new place to DB
-router.post("/", isLoggedIn, function(req, res){
+router.post("/", middleware.isLoggedIn, function(req, res){
     // res.send("post successfully");
     // get data from form and add data to array
     var name = req.body.name;
@@ -41,12 +42,12 @@ router.post("/", isLoggedIn, function(req, res){
     });
 });
 
-//NEW - show form to create new campground
-router.get("/new", isLoggedIn, function(req, res) {
+//NEW - show form to create new place
+router.get("/new", middleware.isLoggedIn, function(req, res) {
     res.render("places/new");
 });
 
-// SHOW - shows more info about one campground
+// SHOW - shows more info about one place
 router.get("/:id", function(req, res) {
     Place.findById(req.params.id).populate("comments").exec(function(err, findPlace) {
     // Place.findById(req.params.id, function(err, findPlace) {
@@ -59,13 +60,38 @@ router.get("/:id", function(req, res) {
     });
 });
 
-// middleware
-function isLoggedIn(req, res, next) {
-    if (req.isAuthenticated()) {
-        next();
-    } else {
-        res.redirect("/login");
-    }
-}
+// EDIT PLACE ROUTE
+router.get("/:id/edit", middleware.checkPlaceOwnership, function(req, res) {
+    Place.findById(req.params.id, function(err, findPlace) {
+        if (err) {
+            res.redirect("/places");
+        } else {
+            res.render("places/edit", {place: findPlace});
+        }
+    });
+});
+
+// UPDATE PLACE ROUTE
+router.put("/:id", middleware.checkPlaceOwnership, function(req, res) {
+    Place.findByIdAndUpdate(req.params.id, req.body.place, function(err, updatedPlace) {
+        if (err) {
+            // console.log(err);
+            res.redirect("/places");
+        } else {
+            res.redirect("/places/" + req.params.id);
+        }
+    });
+});
+
+// DESTORY PLACE ROUTE
+router.delete("/:id", middleware.checkPlaceOwnership, function(req, res) {
+    Place.findByIdAndRemove(req.params.id, function(err) {
+        if (err) {
+            res.redirect("/places");
+        } else {
+            res.redirect("/places");
+        }
+    });
+});
 
 module.exports = router;
