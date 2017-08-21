@@ -24,11 +24,12 @@ router.post("/", middleware.isLoggedIn, function(req, res){
     var name = req.body.name;
     var image = req.body.image;
     var description = req.body.description;
+    var price = req.body.price;
     var author = {
         id: req.user._id,
         username: req.user.username
     };
-    var newPlace = {name: name, image: image, description: description, author: author};
+    var newPlace = {name: name, image: image, description: description, price: price, author: author};
     // places.push(newPlace);
     // CREATE A NEW PLACE AND SAVE IT TO DB
     Place.create(newPlace, function(err, newPlace) {
