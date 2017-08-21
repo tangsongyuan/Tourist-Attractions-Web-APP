@@ -1,7 +1,7 @@
 var express = require("express");
 var router = express.Router();
 var Place = require("../models/place");
-var middleware = require("../middleware"); // directly point to index.js
+var middleware = require("../middleware")
 
 
 // INDEX - show all places

@@ -28,6 +28,7 @@ router.post("/", middleware.isLoggedIn, function(req, res) {
             // console.log(req.body.comment);
             Comment.create(req.body.comment, function(err, newComment) {
                 if (err) {
+                    req.flash("error", "Something went wrong.");
                     console.log(err);
                     res.render("/places/" + req.params.id + "/comments/new"); ////
                 } else {
@@ -38,6 +39,7 @@ router.post("/", middleware.isLoggedIn, function(req, res) {
                     newComment.save();
                     findPlace.comments.push(newComment);
                     findPlace.save();
+                    req.flash("success", "Successfully added comment");
                     res.redirect("/places/" + req.params.id); ///
                 }
             });
@@ -74,6 +76,7 @@ router.delete("/:comment_id", middleware.checkCommentOwnership, function(req, re
         if (err) {
             res.redirect("back");
         } else {
+            req.flash("success", "Comment successfully deleted");
             res.redirect("back");
         }
     });
