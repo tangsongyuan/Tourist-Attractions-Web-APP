@@ -1,7 +1,7 @@
 var express = require("express");
 var router = express.Router();
 var Place = require("../models/place");
-var middleware = require("../middleware")
+var middleware = require("../middleware");
 
 
 // INDEX - show all places
@@ -12,7 +12,7 @@ router.get("/", function(req, res){
         if (err) {
             console.log(err);
         } else {
-            res.render("places/index", {places: allPlaces});
+            res.render("places/index", {places: allPlaces, page: 'places'});
         }
     });
 });
